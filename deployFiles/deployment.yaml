@@ -17,7 +17,7 @@ spec:
         app: jw-workshop
     spec:
       containers:
-      - image: dillson/jw-workshop:latest
+      - image: bbrundert/jw-workshop:latest
         name: jw-workshop-node
         ports:
         - containerPort: 8080
