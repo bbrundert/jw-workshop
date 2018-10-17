@@ -1,3 +1,11 @@
+properties([pipelineTriggers([githubPush()])])
+
+node {
+    stage ('Checkout'){
+        git branch: 'master', url: 'https://github.com/bbrundert/jw-workshop.git'
+    }
+} 
+
 pipeline {
   agent {
     kubernetes {
@@ -6,10 +14,7 @@ pipeline {
     }
   }
   stages {
-    stage ('Checkout'){
-        git branch: 'master', url: 'https://github.com/bbrundert/jw-workshop.git'
-    }
-	  stage('Docker Build') {
+    stage('Docker Build') {
       steps {
         container('docker'){
           sh 'docker build -t bbrundert/jw-workshop:latest .'
