@@ -6,7 +6,10 @@ pipeline {
     }
   }
   stages {
-    stage('Docker Build') {
+    stage ('Checkout'){
+        git branch: 'master', url: 'https://github.com/bbrundert/jw-workshop.git'
+    }
+	  stage('Docker Build') {
       steps {
         container('docker'){
           sh 'docker build -t bbrundert/jw-workshop:latest .'
