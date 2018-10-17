@@ -61,6 +61,10 @@ If it isn't already installed on your machine, please install the kubectl comman
 Kubectl can be pulled down in a variety of ways, including from the VKE UI (on the page for a smartcluster, select actions and then select the correct operating system for your device).
 
 For Helm, please see the following page: [Helm](https://github.com/helm/helm)
+For installing Helm on an Ubuntu system, you can simply use 
+```
+sudo snap install helm --classic
+```
 
 ### Access the VKE Cluster
 
@@ -114,9 +118,11 @@ Comgratulations, you know have a local copy of this repository. It will be in a 
 
 From the cloned repo root folder, run the following commands:
 ```
-sed -i 's/dillson/<your dockerhub username>/g' Jenkinsfile
-sed -i 's/cb-test-59/<your cluster name>/g' Jenkinsfile
+sed -i 's/bbrundert/<your dockerhub username not email>/g' Jenkinsfile
+sed -i 's/bbrundert-devops/<your VKE cluster name>/g' Jenkinsfile
+sed -i 's/bbrundert/<your dockerhub username not email>/g' deployFiles/deployment.yaml
 ```
+(please make sure the deployFiles/deployment.yaml refers to your container image on DockerHub, otherwise you won't see changes after updating the applications later in the workshop)
 
 The cluster name is whatever you named your VKE cluster during the VKE cluster provisioning steps previously.
 
@@ -175,10 +181,18 @@ helm install --namespace ingress-nginx --name nginx-ingress stable/nginx-ingress
 ```
 kubectl describe service nginx-ingress-controller -n ingress-nginx
 ```
-5. Install CloudBees Core. The <lb-ingress-hostname> value is included in the output of the previous command.
+5. Install CloudBees Core. The <lb-ingress-hostname> value is included in the output of the previous command. 
+(It looks like nginx-ingress-controller.<cluster-name>-<random>.vke-user.com)
+
 ```
 helm install core-helm-vke/cloudbeescore --set cjocHost=<lb-ingress-hostname> --namespace cloudbees
 ```
+ 
+If that does not work, try with deploying the local Helm Chart that was created earlier (see https://github.com/dillson/jw-workshop/issues/2):
+```
+helm install CloudBeesCore-0.2.0.tgz --set cjocHost=<lb-ingress-hostname> --namespace cloudbees
+```
+ 
 6. Monitor the progress.
 ```
 kubectl rollout status sts cjoc --namespace cloudbees
@@ -194,6 +208,10 @@ kubectl exec cjoc-0 cat /var/jenkins_home/secrets/initialAdminPassword --namespa
 ```
 10. Follow the instructions in the setup wizard. Request a trial license. Select the 'Install selected plugins' option. 
   * If prompted for an 'Operations Center Upgrade', please ignore and continue without it.
+  * If you have issues requesting the trial license (or later on when working with Jenkins), try to restart the Pod (see https://github.com/dillson/jw-workshop/issues/3):
+```
+jw-workshop$ kubectl delete pod cjoc-0 --namespace=cloudbees
+```
 
 ## Cloudbees configuration and pipeline creation
 
@@ -204,7 +222,7 @@ kubectl exec cjoc-0 cat /var/jenkins_home/secrets/initialAdminPassword --namespa
 4. Choose an icon.
 5. Select the 'Basic' team recipe.
 6. Wait for a few minutes for the Jenkins Master to be created.
-7. Use the button just to the left of the 'Logout' button that looks like an exit sign to reach the classic Jenkins UI. The alt-text for this button is 'Go to classic.'
+7. Use the button just to the left of the 'Logout' button that looks like an exit sign to reach the classic Jenkins UI. The alt-text for this button is 'Go to classic.' It takes you from the modern UI back to the more detailed classic UI. 
 
 ### Jenkins Plugin Configuration
 
@@ -223,7 +241,7 @@ Return to the main screen of the Cloudbees Jenkins Operations Center by using th
 5. From the vertical nav bar on the left edge of the screen, click 'Add Credentials'
 6. Select 'Username with password' from the 'Kind' dropdown menu at the top of the screen.
 7. Leave 'Scope' set to Global
-8. In the Username field, enter your dockerhub user name. In Password, enter your dockerhub password. **For ID and description, you must use 'dockerhub'**
+8. In the Username field, enter your dockerhub user name (not email!!). In Password, enter your dockerhub password. **For ID and description, you must use 'dockerhub'**
 9. Click 'OK'
 10. Click 'Add Credentials' from the vertical navigation bar again.
 11. Use 'Username with password' from the 'Kind' dropdown menu. Use 'Global' as the scope.
