@@ -6,6 +6,10 @@ Instructions created by Dan Illson and Jeff Fry
 
 Presented by Valentina Alaria, Jeff Fry, Dan Illson, Sean O'Dell, and Bill Shetti
 
+Modified for DevOps World Event in Nice by Bjoern Brundert
+
+Find more details in a [blogpost series](https://medium.com/@dillson/deploying-cloudbees-core-on-vmware-kubernetes-engine-d43cff79cbe9) by Dan and Jeff!
+
 ## Prerequisites
 
 In order to successfully complete this workshop, you will need:
