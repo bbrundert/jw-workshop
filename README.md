@@ -102,7 +102,7 @@ In order to feed the CI/CD pipeline automatically on a git push, you'll need to 
 
 In order to have your own working copy of this repository, you'll want to fork it into your account.
 1. First navigate to [http://github.com] and login to your account
-2. Then navigate to the page for this repository [https://github.com/dillson/jw-workshop]
+2. Then navigate to the page for this repository [https://github.com/bbrundert/jw-workshop]
 3. In the upper-right hand section of the screen, click on the button labeled 'Fork'
 
 A copy of this repository will then be forked into your account
@@ -191,8 +191,7 @@ kubectl describe service nginx-ingress-controller -n ingress-nginx
 ```
 helm install core-helm-vke/cloudbeescore --set cjocHost=<lb-ingress-hostname> --namespace cloudbees
 ```
- 
-If that does not work, try with deploying the local Helm Chart that was created earlier (see https://github.com/dillson/jw-workshop/issues/2):
+PLESE NOTE: If that does not work, try with deploying the local Helm Chart that was created earlier (see https://github.com/dillson/jw-workshop/issues/2):
 ```
 helm install CloudBeesCore-0.2.0.tgz --set cjocHost=<lb-ingress-hostname> --namespace cloudbees
 ```
@@ -201,11 +200,14 @@ helm install CloudBeesCore-0.2.0.tgz --set cjocHost=<lb-ingress-hostname> --name
 ```
 kubectl rollout status sts cjoc --namespace cloudbees
 ```
+
 7. Wait for success message.
 ```
 statefulset rolling update complete 1 pods at revision cjoc-59cc694b8b...
 ```
+
 8. Go to ```http://<lb-ingress-hostname>/cjoc```
+
 9. Get the initial admin password.
 ```
 kubectl exec cjoc-0 cat /var/jenkins_home/secrets/initialAdminPassword --namespace cloudbees
@@ -292,20 +294,33 @@ This section represents extended activities for those who complete the base work
 
 Return to the main screen of the Cloudbees Jenkins Operations Center by using the horizontal navigation bar at the top of the screen again. Click on the leftmost entry 'Jenkins'
 
-1. From the vertical navigation bar on the left edge of the screen, select 'Manage Jenkins' -> 'Configure System'
+1. From the vertical navigation bar on the left edge of the screen, select 'Manage Jenkins' -> 'Configure System' ==> Important: this needs to be done as part of your TEAM configuration, not the master Jenkins configuration. Go to your team and then please click "Manage Jenkins" => "Configure System"
 2. Scroll down until you come to the 'Github' section of the conifg
 3. Click the button for 'Add GitHub Server'
 4. The API URL text field should read, `https://api.github.com`. If not, please edit it to that value
 5. Ensure that the 'Manage Hooks' box is checked.
 6. Locate the bottommost 'Advanced' button in the GitHub section.
-7. In the 'Additional Actions' sub section, click the 'Manage additional GitHub actions' dropdown and the 'Convert login and password to token' option
-8. Select the radio button for 'From login and password'
-9. Enter your Github username and password, then click the 'Create token credentials' button.
-10. Click the 'Apply' button at the bottom of the screen.
-11. Under the 'API URL' text field at the top of the GitHub section, there is a credentials dropdown. Select the credential you just created. It will start with `Github (https://api.github.com) auto generated token credentials`.
-12. Click the 'Apply' button at the bottom of the screen.
-13. In the 'Shared Secret' dropdown menu, select the same option as 'Credentials' dropdown above.
-14. Click the 'Apply' button at the bottom of the screen. Then click the 'Save' button.
+
+7a. The following steps apply if you don't have 2-factor-authentication enabled for your GitHub account!
+- In the 'Additional Actions' sub section, click the 'Manage additional GitHub actions' dropdown and the 'Convert login and password to token' option
+- Select the radio button for 'From login and password'
+- Enter your Github username and password, then click the 'Create token credentials' button.
+- Click the 'Apply' button at the bottom of the screen.
+- Under the 'API URL' text field at the top of the GitHub section, there is a credentials dropdown. Select the credential you just created. It will start with `Github (https://api.github.com) auto generated token credentials`.
+- Click the 'Apply' button at the bottom of the screen.
+- In the 'Shared Secret' dropdown menu, select the same option as 'Credentials' dropdown above.
+- Click the 'Apply' button at the bottom of the screen. Then click the 'Save' button.
+
+7b. The following steps apply if you have 2-factor-authentication enabled for your GitHub account!
+- Go to your GitHub account [https://github.com/settings/tokens] and create a new token if you don't have one, yet. Store the token in a safe place
+- In the GitHub Configuration in Jenkins, click "Add Credentials" and select "Jenkins" from the dropdown.
+- Under "Kind" select "Secret Text" and paste your GitHub token into the "Secret" field. Give it a name in the ID field. Save the credential.
+- You can then test the connection and it should result in a 'Credentials verified for user <your user>, rate limit: <number>'
+- Select the newly created credential in the dropdown menu.
+- Click the lower "Advanced" button to open more advanced settings 
+- In the 'Shared Secret' dropdown menu, select the same option as 'Credentials' dropdown above.
+- Click the 'Apply' button at the bottom of the screen. Then click the 'Save' button.
+- NOTE: if you click "Re-register hooks for all jobs", it will reregister the webhooks in your GitHub repository. You can check that on GitHub via https://github.com/<your_username>/jw-workshop/settings/hooks - there should be a new hook afterwards. If you (accidentially) delete that hook in GitHub, you can recreate that by clicking the button "Re-register hooks for all jobs" once more.
 
 ### Test by altering the code and pushing the changes
 
